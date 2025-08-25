@@ -13,7 +13,8 @@ class FoodController extends Controller
      */
     public function index()
     {
-        return Food::all();
+        // On retourne la liste de tous les aliments, explicitement formatée en JSON.
+        return response()->json(Food::all());
     }
 
     /**
@@ -21,6 +22,8 @@ class FoodController extends Controller
      */
     public function show(Food $food)
     {
-        return $food;
+        // On retourne l'aliment spécifique en JSON.
+        // Laravel se charge de le trouver par son ID grâce au "Route Model Binding".
+        return response()->json($food);
     }
 }
