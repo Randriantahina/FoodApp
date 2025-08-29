@@ -6,13 +6,25 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
+  Modal,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { RESTAURANTS } from '@/data/food';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { BlurView } from 'expo-blur';
 
 export default function DetailScreen() {
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const handleOrderPlacement = () => {
+    setModalVisible(true);
+    setTimeout(() => {
+      setModalVisible(false);
+      router.push('/(main)/profile'); // Redirect to profile page
+    }, 3000); // 3 seconds delay
+  };
+
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const restaurant = RESTAURANTS.find((r) => r.id === id);
@@ -53,10 +65,31 @@ export default function DetailScreen() {
         <Ionicons name="arrow-back" size={24} color={Colors.primary} />
       </TouchableOpacity>
       <SafeAreaView style={styles.footer}>
-        <TouchableOpacity style={styles.orderButton}>
+        <TouchableOpacity
+          style={styles.orderButton}
+          onPress={handleOrderPlacement} // Show the modal on press
+        >
           <Text style={styles.orderButtonText}>Place Order</Text>
         </TouchableOpacity>
       </SafeAreaView>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Order placed successfully you will be redirected to your profile
+              page
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -133,5 +166,43 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: Colors.primary,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });
